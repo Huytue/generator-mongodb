@@ -1,0 +1,30 @@
+{
+  "name": "generator-mongodb",
+  "version": "1.0.0",
+  "description": "Mô hình mongoose, khởi tạo RESTful API trên ứng dụng Express NodeJS",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "os": "^0.1.1",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Huytue/generator-mongodb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Huytue/generator-mongodb/issues"
+  },
+  "homepage": "https://github.com/Huytue/generator-mongodb#readme"
+}
