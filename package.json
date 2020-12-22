@@ -7,13 +7,23 @@
     "lib": "lib"
   },
   "dependencies": {
+    "async": "^3.2.0",
+    "commander": "^6.2.1",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "os": "^0.1.1",
     "path": "^0.12.7"
   },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "bin": {
+    "gteam": "bin/gteam"
+  },
   "devDependencies": {},
   "scripts": {
+    "cs": "jscs ./**/*.js ./bin/gteam",
+    "lint": "jshint ./**/*.js ./bin/gteam",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,6 +33,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "keywords": [
+    "mongodb",
+    "mongoose",
+    "express",
+    "generator",
+    "rest",
+    "restfull",
+    "api",
+    "app",
+    "web"
+  ],
   "bugs": {
     "url": "https://github.com/Huytue/generator-mongodb/issues"
   },
