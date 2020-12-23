@@ -1,26 +1,24 @@
-#!/usr/bin/env node
-
 /**
  * Module dependencies
  */
-const program = require('commander');
-const readline = require('readline');
-const async = require('async');
-const generators = require('../lib/generators');
-const cliStyles = require('../lib/cliStyles');
+var CMD = require('commander');
+var readline = require('readline');
+var async = require('async');
+var generators = require('../lib/generators');
+var cliStyles = require('../lib/cliStyles');
 
-const pkg = require('../package.json');
-const version = pkg.version;
+var pkg = require('../package.json');
+var version = pkg.version;
 
-const rl = readline.createInterface({
+var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-const ALLOWED_FIELDS_TYPES = ['string', 'number', 'date', 'boolean', 'array', 'objectId'];
-const ALLOWED_REST_ARGUMENT = { 'YES': 'yes', 'NO': 'no' };
-const ALLOWED_FILE_TREE_ARGUMENT = { 'TYPE': 't', 'MODULE': 'm' };
-const CLI_PHRASES = {
+var ALLOWED_FIELDS_TYPES = ['string', 'number', 'date', 'boolean', 'array', 'objectId'];
+var ALLOWED_REST_ARGUMENT = { 'YES': 'yes', 'NO': 'no' };
+var ALLOWED_FILE_TREE_ARGUMENT = { 'TYPE': 't', 'MODULE': 'm' };
+var CLI_PHRASES = {
     AVAILABLE_TYPE: 'Available types : string, number, date, boolean, array, objectId',
     QUESTION_MODEL_NAME: 'Model Name : ',
     QUESTION_FIELD_NAME: 'Field Name (press <return> to stop adding fields) : ',
@@ -39,30 +37,34 @@ const CLI_PHRASES = {
 };
 
 // CLI
-program
+CMD
     .version(version)
     .usage('[options]')
     .option('-m, --model <modelName>', 'model name')
     .option('-f, --fields <fields>', 'model fields (name1:type1,name2:type2)')
     .option('-r, --rest', 'enable generation REST')
     .option('-t, --tree <tree>', 'files tree generation grouped by <t>ype or by <m>odule')
+    .option('--ts', 'Generating code in TS')
     .parse(process.argv)
     ;
 
-// Main program
+// Main CMD
 (function (path) {
-    if (program.model || program.fields) {
-        runNonInteractiveMode(path);
+    var ts = !!(CMD.ts);
+
+    if (CMD.model || CMD.fields) {
+        runNonInteractiveMode(path, ts);
     } else {
-        runInteractiveMode(path);
+        runInteractiveMode(path, ts);
     }
 })('.');
 
 /**
  * Get parameters in interactive mode
  * @param {string} path destination path
+ * @param {boolean} ts generating code in TS
  */
-function runInteractiveMode(path) {
+function runInteractiveMode(path, ts) {
     async.series({
         name: function (cb) {
             askQuestion(CLI_PHRASES.QUESTION_MODEL_NAME, isModelNameParamValid, function (name) {
@@ -137,24 +139,24 @@ function runInteractiveMode(path) {
     },
         function (err, results) {
             if (err) {
-                return closeProgram();
+                return closeCMD();
             }
 
             async.parallel([
                 function (cb) {
-                    generators.generateModel(path, results.name, results.fields, results.generateMethod, cb);
+                    generators.generateModel(path, results.name, results.fields, results.generateMethod, ts, cb);
                 },
                 function (cb) {
                     if (results.rest !== 'yes') { return cb(); }
-                    generators.generateRouter(path, results.name, results.generateMethod, cb);
+                    generators.generateRouter(path, results.name, results.generateMethod, ts, cb);
                 },
                 function (cb) {
                     if (results.rest !== 'yes') { return cb(); }
-                    generators.generateController(path, results.name, results.fields, results.generateMethod, cb);
+                    generators.generateController(path, results.name, results.fields, results.generateMethod, ts, cb);
                 }
             ],
                 function (err, results) {
-                    closeProgram();
+                    closeCMD();
                 }
             );
         }
@@ -164,37 +166,38 @@ function runInteractiveMode(path) {
 /**
  * Get parameters in non-interactive mode
  * @param {string} path destination path
+ * @param {boolean} ts generating code in TS
  */
-function runNonInteractiveMode(path) {
-    if (!isModelNameParamValid(program.model) || !isFieldsParamValid(program.fields)) {
-        return closeProgram();
+function runNonInteractiveMode(path, ts) {
+    if (!isModelNameParamValid(CMD.model) || !isFieldsParamValid(CMD.fields)) {
+        return closeCMD();
     }
 
-    var modelName = program.model;
-    var modelFields = formatFieldsParamInArray(program.fields);
-    var fileTree = program.tree || ALLOWED_FILE_TREE_ARGUMENT.TYPE;
+    var modelName = CMD.model;
+    var modelFields = formatFieldsParamInArray(CMD.fields);
+    var fileTree = CMD.tree || ALLOWED_FILE_TREE_ARGUMENT.TYPE;
 
     if (!isFileTreeParamValid(fileTree)) {
-        return closeProgram();
+        return closeCMD();
     }
 
-    if (!modelFields) { return closeProgram(); }
+    if (!modelFields) { return closeCMD(); }
 
     async.parallel([
         function (cb) {
-            generators.generateModel(path, modelName, modelFields, fileTree, cb);
+            generators.generateModel(path, modelName, modelFields, fileTree, ts, cb);
         },
         function (cb) {
-            if (!program.rest) { return cb(); }
-            generators.generateRouter(path, modelName, fileTree, cb);
+            if (!CMD.rest) { return cb(); }
+            generators.generateRouter(path, modelName, fileTree, ts, cb);
         },
         function (cb) {
-            if (!program.rest) { return cb(); }
-            generators.generateController(path, modelName, modelFields, fileTree, cb);
+            if (!CMD.rest) { return cb(); }
+            generators.generateController(path, modelName, modelFields, fileTree, ts, cb);
         }
     ],
         function (err, results) {
-            closeProgram();
+            closeCMD();
         }
     );
 }
@@ -219,9 +222,9 @@ function askQuestion(question, validate, callback) {
 }
 
 /**
- * Close the program
+ * Close the CMD
  */
-function closeProgram() {
+function closeCMD() {
     rl.close();
     process.exit();
 }
@@ -327,14 +330,26 @@ function formatFieldsParamInArray(fields) {
 
     var err = arrayFields.every(function (field) {
         var f = field.split(':');
+
         var fieldName = f[0];
         var fieldType = (f[1] || ALLOWED_FIELDS_TYPES[0]);
+        var fieldRef = '';
+        var isArray = false;
+
+        if (fieldType === ALLOWED_FIELDS_TYPES[5]) {
+            fieldRef = f[2];
+            isArray = f[3] === ALLOWED_FIELDS_TYPES[4];
+        } else {
+            isArray = f[2] === ALLOWED_FIELDS_TYPES[4];
+        }
 
         if (!isFieldValid(fieldName, fieldType)) { return false; }
 
         result.push({
             name: fieldName,
-            type: fieldType
+            type: fieldType,
+            isArray: isArray,
+            reference: fieldRef
         });
 
         return true;

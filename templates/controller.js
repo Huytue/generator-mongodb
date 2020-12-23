@@ -1,4 +1,4 @@
-const { modelName } = require({ modelPath });
+var { modelName } = require({ modelPath });
 
 /**
  * {controllerName}.js
@@ -10,8 +10,8 @@ module.exports = {
     /**
      * {controllerName}.list()
      */
-    list: function (req, res) {
-        modelName.find(function (err, { pluralName }) {
+    list{ modelName }: function (req, res) {
+        { modelName }.find(function (err, { pluralName }) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting {name}.',
@@ -22,51 +22,51 @@ module.exports = {
         });
     },
 
-    /**
-     * {controllerName}.show()
-     */
-    show: function (req, res) {
-        const id = req.params.id;
-        modelName.findOne({ _id: id }, function (err, { name }) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting {name}.',
-                    error: err
-                });
-            }
-            if (!{ name }) {
-                return res.status(404).json({
-                    message: 'No such {name}'
-                });
-            }
-            return res.json({ name });
-        });
-    },
+/**
+ * {controllerName}.show()
+ */
+show{ modelName }: function (req, res) {
+    var id = req.params.id;
+    { modelName }.findOne({ _id: id }, function (err, { name }) {
+        if (err) {
+            return res.status(500).json({
+                message: 'Error when getting {name}.',
+                error: err
+            });
+        }
+        if (!{ name }) {
+            return res.status(404).json({
+                message: 'No such {name}'
+            });
+        }
+        return res.json({ name });
+    });
+},
 
-    /**
-     * {controllerName}.create()
-     */
-    create: function (req, res) {
-        const { name } = new modelName({{ createFields }
+/**
+ * {controllerName}.create()
+ */
+create{ modelName }: function (req, res) {
+    var { name } = new { modelName }({{ createFields }
         });
 
 { name }.save(function (err, { name }) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when creating {name}',
-                    error: err
-                });
-            }
-            return res.status(201).json({ name });
+    if (err) {
+        return res.status(500).json({
+            message: 'Error when creating {name}',
+            error: err
         });
+    }
+    return res.status(201).json({ name });
+});
     },
 
 /**
  * {controllerName}.update()
  */
-update: function (req, res) {
-    const id = req.params.id;
-    modelName.findOne({ _id: id }, function (err, { name }) {
+update{ modelName }: function (req, res) {
+    var id = req.params.id;
+    { modelName }.findOne({ _id: id }, function (err, { name }) {
         if (err) {
             return res.status(500).json({
                 message: 'Error when getting {name}',
@@ -96,9 +96,9 @@ update: function (req, res) {
 /**
  * {controllerName}.remove()
  */
-remove: function (req, res) {
-    const id = req.params.id;
-    modelName.findByIdAndRemove(id, function (err, { name }) {
+remove{ modelName }: function (req, res) {
+    var id = req.params.id;
+    { modelName }.findByIdAndRemove(id, function (err, { name }) {
         if (err) {
             return res.status(500).json({
                 message: 'Error when deleting the {name}.',
