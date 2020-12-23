@@ -1,111 +1,59 @@
-var { modelName } = require({ modelPath });
+const { Controller } = require("../orm/database");
+const controllers = new Controller();
 
-/**
- * {controllerName}.js
- *
- * @description :: Server-side logic for managing {pluralName}.
- */
+const {modelName} = require('modelPath');
+const { response } = require("../orm/response");
+
 module.exports = {
 
-    /**
-     * {controllerName}.list()
-     */
-    list: function (req, res) {
-        { modelName }.find(function (err, { pluralName }) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting {name}.',
-                    error: err
-                });
-            }
-            return res.json({ pluralName });
-        });
-},
-
-    /**
-     * {controllerName}.show()
-     */
-    show: function (req, res) {
-        var id = req.params.id;
-        { modelName }.findOne({ _id: id }, function (err, { name }) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting {name}.',
-                    error: err
-                });
-            }
-            if (!{ name }) {
-                return res.status(404).json({
-                    message: 'No such {name}'
-                });
-            }
-            return res.json({ name });
-        });
+    index: async function (req, res) {
+        const list = await controllers.find({modelName});
+        response(res, 200, 'message...', list);
     },
 
-/**
- * {controllerName}.create()
- */
-create: function (req, res) {
-    var { name } = new { modelName }({{ createFields }
-        });
+    getUser: async function (req, res) {
+        const id = req.params.id;
+        const detail = await controllers.findById({modelName}, id);
+        if (detail) {
+            response(res, 200, 'message...', list);
+        } else {
+            response(res, 403, '{modelName} does not exist....');
+        }
+    },
 
-{ name }.save(function (err, { name }) {
-    if (err) {
-        return res.status(500).json({
-            message: 'Error when creating {name}',
-            error: err
-        });
+    newUser: async function (req, res) {
+        try {
+            const data = new {modelName}(req.body);
+            await controllers.save({modelName}, data);
+            response(res, 201, '{modelName} created....', data);
+        } catch (err) {
+            response(res, 403, '{modelName} is already in use.....');
+        }
+    },
+
+
+    updateUser: async function (req, res) {
+        const id = req.params.id;
+        const data = req.body;
+        try {
+            const result = await controllers.findByIdAndUpdate({modelName}, id, data);
+            response(res, 200, '{modelName} updated....');
+        } catch (error) {
+            response(res, 500, '{modelName} updated fail.....');
+        }
+    },
+
+
+    deleteUser: async function (req, res) {
+        const id = req.params.id;
+        try {
+            const data = await controllers.remove({modelName}, id);
+            if (!data) throw Error("{modelName} not found!");
+            {
+                response(res, 200, '{modelName} deleted successfully.....');
+            }
+        } catch (err) {
+            response(res, 403, '{modelName} deleted fail.....');
+        }
     }
-    return res.status(201).json({ name });
-});
-    },
-
-/**
- * {controllerName}.update()
- */
-update: function (req, res) {
-    var id = req.params.id;
-    { modelName }.findOne({ _id: id }, function (err, { name }) {
-        if (err) {
-            return res.status(500).json({
-                message: 'Error when getting {name}',
-                error: err
-            });
-        }
-        if (!{ name }) {
-            return res.status(404).json({
-                message: 'No such {name}'
-            });
-        }
-
-        { updateFields }
-        { name }.save(function (err, { name }) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when updating {name}.',
-                    error: err
-                });
-            }
-
-            return res.json({ name });
-        });
-    });
-},
-
-/**
- * {controllerName}.remove()
- */
-remove: function (req, res) {
-    var id = req.params.id;
-    { modelName }.findByIdAndRemove(id, function (err, { name }) {
-        if (err) {
-            return res.status(500).json({
-                message: 'Error when deleting the {name}.',
-                error: err
-            });
-        }
-        return res.status(204).json();
-    });
-}
 };

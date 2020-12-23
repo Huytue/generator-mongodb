@@ -1,6 +1,17 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var { schemaName } = new Schema({ fields });
+const schemaName = new Schema({ 
+    sID: {
+		type: String,
+		default: null
+	},
+	name: {
+		type: String,
+		// unique: true,
+		required: true
+	},
+ });
 
-module.exports = mongoose.model('{modelName}', { schemaName });
+const {modelName} = mongoose.model('{modelName}', schemaName);
+module.exports = {modelName};
