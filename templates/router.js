@@ -1,30 +1,20 @@
-var express = require('express');
-var router = express.Router();
-var { controllerName } = require({ controllerPath });
+const express = require('express');
+const router = express.Router();
+const controllerName = require('controllerPath');
 
-/*
- * GET
- */
-router.get('/', { controllerName }.list);
+//Get object list
+router.get('/', controllerName.index);
 
-/*
- * GET
- */
-router.get('/:id', { controllerName }.show);
+//Get object by ID
+router.get('/:id', controllerName.getUser);
 
-/*
- * POST
- */
-router.post('/', { controllerName }.create);
+//Create
+router.post('/', controllerName.newUser);
 
-/*
- * PUT
- */
-router.put('/:id', { controllerName }.update);
+//Update
+router.patch('/:id', controllerName.updateUser);
 
-/*
- * DELETE
- */
-router.delete('/:id', { controllerName }.remove);
+//Delete
+router.delete('/:id', controllerName.deleteUser);
 
 module.exports = router;
