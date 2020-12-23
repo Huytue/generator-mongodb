@@ -46,27 +46,23 @@ program
     .option('-f, --fields <fields>', 'model fields (name1:type1,name2:type2)')
     .option('-r, --rest', 'enable generation REST')
     .option('-t, --tree <tree>', 'files tree generation grouped by <t>ype or by <m>odule')
-    .option('--ts', 'Generating code in TS')
     .parse(process.argv)
     ;
 
 // Main program
 (function (path) {
-    var ts = !!(program.ts);
-
     if (program.model || program.fields) {
-        runNonInteractiveMode(path, ts);
+        runNonInteractiveMode(path);
     } else {
-        runInteractiveMode(path, ts);
+        runInteractiveMode(path);
     }
 })('.');
 
 /**
  * Get parameters in interactive mode
  * @param {string} path destination path
- * @param {boolean} ts generating code in TS
  */
-function runInteractiveMode(path, ts) {
+function runInteractiveMode(path) {
     async.series({
         name: function (cb) {
             askQuestion(CLI_PHRASES.QUESTION_MODEL_NAME, isModelNameParamValid, function (name) {
@@ -146,15 +142,15 @@ function runInteractiveMode(path, ts) {
 
             async.parallel([
                 function (cb) {
-                    generators.generateModel(path, results.name, results.fields, results.generateMethod, ts, cb);
+                    generators.generateModel(path, results.name, results.fields, results.generateMethod, cb);
                 },
                 function (cb) {
                     if (results.rest !== 'yes') { return cb(); }
-                    generators.generateRouter(path, results.name, results.generateMethod, ts, cb);
+                    generators.generateRouter(path, results.name, results.generateMethod, cb);
                 },
                 function (cb) {
                     if (results.rest !== 'yes') { return cb(); }
-                    generators.generateController(path, results.name, results.fields, results.generateMethod, ts, cb);
+                    generators.generateController(path, results.name, results.fields, results.generateMethod, cb);
                 }
             ],
                 function (err, results) {
@@ -168,9 +164,8 @@ function runInteractiveMode(path, ts) {
 /**
  * Get parameters in non-interactive mode
  * @param {string} path destination path
- * @param {boolean} ts generating code in TS
  */
-function runNonInteractiveMode(path, ts) {
+function runNonInteractiveMode(path) {
     if (!isModelNameParamValid(program.model) || !isFieldsParamValid(program.fields)) {
         return closeProgram();
     }
@@ -187,15 +182,15 @@ function runNonInteractiveMode(path, ts) {
 
     async.parallel([
         function (cb) {
-            generators.generateModel(path, modelName, modelFields, fileTree, ts, cb);
+            generators.generateModel(path, modelName, modelFields, fileTree, cb);
         },
         function (cb) {
             if (!program.rest) { return cb(); }
-            generators.generateRouter(path, modelName, fileTree, ts, cb);
+            generators.generateRouter(path, modelName, fileTree, cb);
         },
         function (cb) {
             if (!program.rest) { return cb(); }
-            generators.generateController(path, modelName, modelFields, fileTree, ts, cb);
+            generators.generateController(path, modelName, modelFields, fileTree, cb);
         }
     ],
         function (err, results) {
@@ -332,26 +327,14 @@ function formatFieldsParamInArray(fields) {
 
     var err = arrayFields.every(function (field) {
         var f = field.split(':');
-
         var fieldName = f[0];
         var fieldType = (f[1] || ALLOWED_FIELDS_TYPES[0]);
-        var fieldRef = '';
-        var isArray = false;
-
-        if (fieldType === ALLOWED_FIELDS_TYPES[5]) {
-            fieldRef = f[2];
-            isArray = f[3] === ALLOWED_FIELDS_TYPES[4];
-        } else {
-            isArray = f[2] === ALLOWED_FIELDS_TYPES[4];
-        }
 
         if (!isFieldValid(fieldName, fieldType)) { return false; }
 
         result.push({
             name: fieldName,
-            type: fieldType,
-            isArray: isArray,
-            reference: fieldRef
+            type: fieldType
         });
 
         return true;

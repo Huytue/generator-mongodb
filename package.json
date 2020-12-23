@@ -1,6 +1,6 @@
 {
   "name": "generator-mongodb",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Mô hình mongoose, khởi tạo RESTful API trên ứng dụng Express NodeJS",
   "main": "index.js",
   "directories": {

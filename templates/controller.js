@@ -10,7 +10,7 @@ module.exports = {
     /**
      * {controllerName}.list()
      */
-    list{ modelName }: function (req, res) {
+    list: function (req, res) {
         { modelName }.find(function (err, { pluralName }) {
             if (err) {
                 return res.status(500).json({
@@ -20,33 +20,33 @@ module.exports = {
             }
             return res.json({ pluralName });
         });
-    },
-
-/**
- * {controllerName}.show()
- */
-show{ modelName }: function (req, res) {
-    var id = req.params.id;
-    { modelName }.findOne({ _id: id }, function (err, { name }) {
-        if (err) {
-            return res.status(500).json({
-                message: 'Error when getting {name}.',
-                error: err
-            });
-        }
-        if (!{ name }) {
-            return res.status(404).json({
-                message: 'No such {name}'
-            });
-        }
-        return res.json({ name });
-    });
 },
+
+    /**
+     * {controllerName}.show()
+     */
+    show: function (req, res) {
+        var id = req.params.id;
+        { modelName }.findOne({ _id: id }, function (err, { name }) {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error when getting {name}.',
+                    error: err
+                });
+            }
+            if (!{ name }) {
+                return res.status(404).json({
+                    message: 'No such {name}'
+                });
+            }
+            return res.json({ name });
+        });
+    },
 
 /**
  * {controllerName}.create()
  */
-create{ modelName }: function (req, res) {
+create: function (req, res) {
     var { name } = new { modelName }({{ createFields }
         });
 
@@ -64,7 +64,7 @@ create{ modelName }: function (req, res) {
 /**
  * {controllerName}.update()
  */
-update{ modelName }: function (req, res) {
+update: function (req, res) {
     var id = req.params.id;
     { modelName }.findOne({ _id: id }, function (err, { name }) {
         if (err) {
@@ -96,7 +96,7 @@ update{ modelName }: function (req, res) {
 /**
  * {controllerName}.remove()
  */
-remove{ modelName }: function (req, res) {
+remove: function (req, res) {
     var id = req.params.id;
     { modelName }.findByIdAndRemove(id, function (err, { name }) {
         if (err) {
