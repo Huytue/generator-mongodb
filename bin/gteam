@@ -1,7 +1,7 @@
 /**
  * Module dependencies
  */
-var CMD = require('commander');
+var program = require('commander');
 var readline = require('readline');
 var async = require('async');
 var generators = require('../lib/generators');
@@ -37,7 +37,7 @@ var CLI_PHRASES = {
 };
 
 // CLI
-CMD
+program
     .version(version)
     .usage('[options]')
     .option('-m, --model <modelName>', 'model name')
@@ -48,11 +48,11 @@ CMD
     .parse(process.argv)
     ;
 
-// Main CMD
+// Main program
 (function (path) {
-    var ts = !!(CMD.ts);
+    var ts = !!(program.ts);
 
-    if (CMD.model || CMD.fields) {
+    if (program.model || program.fields) {
         runNonInteractiveMode(path, ts);
     } else {
         runInteractiveMode(path, ts);
@@ -139,7 +139,7 @@ function runInteractiveMode(path, ts) {
     },
         function (err, results) {
             if (err) {
-                return closeCMD();
+                return closeProgram();
             }
 
             async.parallel([
@@ -156,7 +156,7 @@ function runInteractiveMode(path, ts) {
                 }
             ],
                 function (err, results) {
-                    closeCMD();
+                    closeProgram();
                 }
             );
         }
@@ -169,35 +169,35 @@ function runInteractiveMode(path, ts) {
  * @param {boolean} ts generating code in TS
  */
 function runNonInteractiveMode(path, ts) {
-    if (!isModelNameParamValid(CMD.model) || !isFieldsParamValid(CMD.fields)) {
-        return closeCMD();
+    if (!isModelNameParamValid(program.model) || !isFieldsParamValid(program.fields)) {
+        return closeProgram();
     }
 
-    var modelName = CMD.model;
-    var modelFields = formatFieldsParamInArray(CMD.fields);
-    var fileTree = CMD.tree || ALLOWED_FILE_TREE_ARGUMENT.TYPE;
+    var modelName = program.model;
+    var modelFields = formatFieldsParamInArray(program.fields);
+    var fileTree = program.tree || ALLOWED_FILE_TREE_ARGUMENT.TYPE;
 
     if (!isFileTreeParamValid(fileTree)) {
-        return closeCMD();
+        return closeProgram();
     }
 
-    if (!modelFields) { return closeCMD(); }
+    if (!modelFields) { return closeProgram(); }
 
     async.parallel([
         function (cb) {
             generators.generateModel(path, modelName, modelFields, fileTree, ts, cb);
         },
         function (cb) {
-            if (!CMD.rest) { return cb(); }
+            if (!program.rest) { return cb(); }
             generators.generateRouter(path, modelName, fileTree, ts, cb);
         },
         function (cb) {
-            if (!CMD.rest) { return cb(); }
+            if (!program.rest) { return cb(); }
             generators.generateController(path, modelName, modelFields, fileTree, ts, cb);
         }
     ],
         function (err, results) {
-            closeCMD();
+            closeProgram();
         }
     );
 }
@@ -222,9 +222,9 @@ function askQuestion(question, validate, callback) {
 }
 
 /**
- * Close the CMD
+ * Close the program
  */
-function closeCMD() {
+function closeProgram() {
     rl.close();
     process.exit();
 }
