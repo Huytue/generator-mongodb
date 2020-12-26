@@ -11,7 +11,7 @@ module.exports = {
         response(res, 200, 'message...', list);
     },
 
-    getUser: async function (req, res) {
+    get{modelName}: async function (req, res) {
         const id = req.params.id;
         const detail = await controllers.findById({modelName}, id);
         if (detail) {
@@ -21,7 +21,7 @@ module.exports = {
         }
     },
 
-    newUser: async function (req, res) {
+    new{modelName}: async function (req, res) {
         try {
             const data = new {modelName}(req.body);
             await controllers.save({modelName}, data);
@@ -32,7 +32,7 @@ module.exports = {
     },
 
 
-    updateUser: async function (req, res) {
+    update{modelName}: async function (req, res) {
         const id = req.params.id;
         const data = req.body;
         try {
@@ -44,7 +44,7 @@ module.exports = {
     },
 
 
-    deleteUser: async function (req, res) {
+    delete{modelName}: async function (req, res) {
         const id = req.params.id;
         try {
             const data = await controllers.remove({modelName}, id);

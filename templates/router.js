@@ -6,15 +6,15 @@ const controllerName = require('controllerPath');
 router.get('/', controllerName.index);
 
 //Get object by ID
-router.get('/:id', controllerName.getUser);
+router.get('/detail/:id', controllerName.getcontrollerName);
 
 //Create
-router.post('/', controllerName.newUser);
+router.post('/add', controllerName.newcontrollerName);
 
 //Update
-router.patch('/:id', controllerName.updateUser);
+router.put('/edit/:id', controllerName.updatecontrollerName);
 
 //Delete
-router.delete('/:id', controllerName.deleteUser);
+router.delete('/delete/:id', controllerName.deletecontrollerName);
 
 module.exports = router;
