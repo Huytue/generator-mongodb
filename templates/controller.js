@@ -8,14 +8,14 @@ module.exports = {
 
     index: async function (req, res) {
         const list = await controllers.find({modelName});
-        response(res, 200, 'message...', list);
+        response(res, 200, 'message...', {list});
     },
 
     get{modelName}: async function (req, res) {
         const id = req.params.id;
         const detail = await controllers.findById({modelName}, id);
         if (detail) {
-            response(res, 200, 'message...', list);
+            response(res, 200, 'message...', {detail});
         } else {
             response(res, 403, '{modelName} does not exist....');
         }
@@ -25,7 +25,7 @@ module.exports = {
         try {
             const data = new {modelName}(req.body);
             await controllers.save({modelName}, data);
-            response(res, 201, '{modelName} created....', data);
+            response(res, 201, '{modelName} created....', {data});
         } catch (err) {
             response(res, 403, '{modelName} is already in use.....');
         }
@@ -37,7 +37,7 @@ module.exports = {
         const data = req.body;
         try {
             const result = await controllers.findByIdAndUpdate({modelName}, id, data);
-            response(res, 200, '{modelName} updated....');
+            response(res, 200, '{modelName} updated....', {data});
         } catch (error) {
             response(res, 500, '{modelName} updated fail.....');
         }
