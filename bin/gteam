@@ -23,6 +23,10 @@ program
     runGenerateG(path);
 })('.');
 
+/**
+ * Get parameters in interactive mode
+ * @param {string} path destination path
+ */
 function runGenerateG(path) {
     var generate = program.generate;
     async.parallel([
