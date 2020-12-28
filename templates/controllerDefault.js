@@ -23,7 +23,7 @@ module.exports = {
 
     new{modelName}: async function (req, res) {
         try {
-            const data = new {modelName}({{createFields}});
+            const data = new {modelName}(req.body);
             await controllers.save({modelName}, data);
             response(res, 201, '{modelName} created....', {data});
         } catch (err) {
@@ -36,7 +36,7 @@ module.exports = {
         const id = req.params.id;
         const data = req.body;
         try {
-            const result = await controllers.findByIdAndUpdate({modelName}, id, {updateField});
+            const result = await controllers.findByIdAndUpdate({modelName}, id, data);
             response(res, 200, '{modelName} updated....', {data});
         } catch (error) {
             response(res, 500, '{modelName} updated fail.....');
