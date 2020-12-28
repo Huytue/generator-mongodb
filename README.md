@@ -19,6 +19,7 @@ gteam <command>
 
 Commands:
   gteam  -ge <modelName>            Run pending migrations
+  gteam  -del <modelName>            Run delete model
 ```
 
 ## Contributing
