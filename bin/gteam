@@ -15,12 +15,18 @@ program
     .version(version)
     .usage('[options]')
     .option('-ge, --generate <string>', 'name model', 'sampleMongo')
+    .option('-del, --delete <string>', 'delete sample mongodb')
     .parse(process.argv)
     ;
 
 // Main program
 (function (path) {
-    runGenerateG(path);
+    if(program.delete){
+        deleteModel(path);
+    }else{
+        runGenerateG(path);
+    }
+    
 })('.');
 
 /**
@@ -39,5 +45,14 @@ function runGenerateG(path) {
         function (cb) {
             generators.generateRoute(path, generate, cb);
         },
+    ]);
+}
+
+function deleteModel(path){
+    var modelName = program.delete;
+    async.parallel([
+        function (cb) {
+            generators.deleteModel(path, modelName, cb);
+        }
     ]);
 }
